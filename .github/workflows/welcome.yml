@@ -9,7 +9,15 @@ jobs:
     name: Post welcome comment
     runs-on: ubuntu-latest
     steps:
-      - run: gh pr comment "$PR_URL" --body "Welcome to the repository!"
+      - name: Authenticate gh
+        run: |
+          # pipe the GITHUB_TOKEN into gh so the CLI is authenticated non-interactively
+          echo "${GITHUB_TOKEN}" | gh auth login --with-token
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post welcome comment
+        run: gh pr comment "$PR_URL" --body "Welcome to the repository!"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
